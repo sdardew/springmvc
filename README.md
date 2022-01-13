@@ -245,7 +245,63 @@
 - `@ResponseBody`
     - 객체 -> HTTP 메시지 컨버터 -> JSON
 
-## HTTP 응답
+## HTTP 응답 - 정적 리소스, 뷰 템플릿
+
+### 스프링의 응답 데이터
+- 정적 리소스
+    - HTML, CSS, Javascript 같은 리소스
+- 뷰 템플릿
+    - 동적인 HTML 제공
+- HTTP 메시지
+    - HTTP API를 제공하는 경우에 데이터를 전달
+
+### 정적 리소스
+- 스프링 부트는 클래스패스에 다음 디렉토리에 있는 정적 리소스 제공
+    - `/static`
+    - `/public`
+    - `/resources`
+    - `/META-INF/resources`
+- `src/main/resources`
+    - 리소스를 보관하는 곳
+    - 클래스패스의 시작 경로
+- 정적 리소스 경로: `src/main/resources/static`
+    - `src/main/resources/static/hello/spring.html`: `localhost:8080/hello/spring.html`에 접속
+- 파일을 변경없이 제공
+
+### 뷰 템플릿
+- 뷰 템플릿 경로: `src/main/resources/templates`
+- 뷰 템플릿을 리턴하는 방법
+    - `ModelAndView`
+        - 뷰 템플릿의 경로를 `ModelAndView`에 넣고 `addObject`로 데이터를 추가
+    - `String`
+        - `@ResponseBody`가 없다면 뷰 리졸버가 실행되어 뷰를 찾고 렌더링
+        - `@ResponseBody`가 있다면 메시지 바디에 직접 문자를 입력
+    - `Void`
+        - `@Controller`를 사용하고 HTTP 바디 처리하는 파라미터가 없을 때, URL을 참고하여 뷰를 제공
+
+### HTTP 메시지
+- `@ResponseBody`, `HttpEntity`를 사용하여, 메시지 바디에 직접 응답 데이터 출력
+
+### Thmeleaf 스프링 부트 설정 
+1.  `build.gradle`에 필요한 스프링 빈 등록
+``` gradle
+implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+```
+2. `application.properties`에 필요한 값 설정
+```
+# 기본 값
+pring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+```
+
+## HTTP 응답 - HTTP API
+- HTTP API의 경우 HTML이 아닌 데이터 전달
+- 전달하는 방법
+    - `HttpServletResponse` 객체 사용
+    - `ResponseEntity` 엔티티 사용
+    - `@ResponseBody` 사용
+    - `@RestController`: 모두 `@ResponseBody`가 적용되는 효과
+
 
 ## HTTP 메시지 컨버터
 
