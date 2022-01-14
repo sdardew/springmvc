@@ -356,14 +356,16 @@ public interface HttpMessageConverter<T> {
 2. `canRead()`를 호출하여 메시지 컨버터가 읽을 수 있는지 확인
     - 클래스 타입
     - 미디어 타입
-3. `canRead()`조건을 만족하면 `read()`를 호출
+3. `canRead()`조건을 만족하면 `read()`를 호출하여 객체 생성 및 반환
 
 ### 응답 데이터 생성
 1. 컨트롤러에서 `@ResponseBody`, `HttpEntity`로 값이 반환
 2. `canWrite()`를 호출하여 메시지 컨버터가 쓸 수 있는지 확인
     - 클래스 타입
     - 미디어 타입
-3. `canWrite()`조건을 만족하면 `write()`를 호출
-
+3. `canWrite()`조건을 만족하면 `write()`를 호출하여 바디에 데이터를 생성
 
 ## 요청 매핑 핸들러 어댑터 구조
+- `ArgumentResolver`: 파라미터를 유연하게 처리할 수 있게 도와줌
+- `RequestMappingHandlerAdaptor`: `ArgumentResolver`를 호출
+- [가능한 파라미터 목록](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-arguments)
