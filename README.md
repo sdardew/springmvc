@@ -305,4 +305,65 @@ spring.thymeleaf.suffix=.html
 
 ## HTTP 메시지 컨버터
 
+### 스프링 MVC가 HTTP 메시지 컨버터를 적용하는 경우
+- HTTP 요청
+    - `@RequestBody`
+    - `HttpEntity(RequestEntity)`
+- HTTP 응답
+    - `@ResponseBody`
+    - `HttpEntity(ResponseEntity)`
+
+### HTTP 컨버터 구조
+``` java
+public interface HttpMessageConverter<T> {
+
+    boolean canRead(Class<?> clazz, @Nullable MediaType mediaType);
+    boolean canWrite(Class<?> clazz, @Nullable MediaType mediaType);
+
+    List<MediaType> getSupportedMediaTypes();
+
+    T read(Class<? extends T> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException;
+    void write(T t, @Nullable MediaType contentType, HttpOutputMessageoutputMessage) throws IOException, HttpMessageNotWritableException;
+}
+
+```
+- HTTP 메시지 컨버터는 요청, 응답 둘다 사용
+- `canRead()`, `canWrite()`: 메시지 컨버터가 해당 클래스, 미디어타입을 지원하는지 체크
+- `read()`, `write()`: 메시지 컨버터를 통해서 메시지를 읽고 쓰는 기능
+
+
+### 메시지 컨버터 우선 순위
+1. `ByteArrayHttpMessageConverter`
+    - 클래스 타입: `byte[]`
+    - 미디어타입: `*/*`
+2. `StringHttpMessageConverter`
+    - 클래스 타입: `String`
+    - 미디어 타입: `*/*`
+3. `MappingJackson2HttpMessageConverter`
+    - 클래스 타입: 객체, `HashMapp`
+    - 미디어 타입: `application/json`
+> 클래스 타입은 요청 받은 데이터, 미디어 타입은 응답할 데이터
+
+### 요청 데이터 읽기
+1. 컨트롤러에서 `@RequestBody`, `HttpEntity` 파라미터를 사용
+2. `canRead()`를 호출하여 메시지 컨버터가 읽을 수 있는지 확인
+    - 클래스 타입
+    - 미디어 타입
+3. `canRead()`조건을 만족하면 `read()`를 호출
+
+### 요청 데이터 읽기
+1. 컨트롤러에서 `@RequestBody`, `HttpEntity` 파라미터를 사용
+2. `canRead()`를 호출하여 메시지 컨버터가 읽을 수 있는지 확인
+    - 클래스 타입
+    - 미디어 타입
+3. `canRead()`조건을 만족하면 `read()`를 호출
+
+### 응답 데이터 생성
+1. 컨트롤러에서 `@ResponseBody`, `HttpEntity`로 값이 반환
+2. `canWrite()`를 호출하여 메시지 컨버터가 쓸 수 있는지 확인
+    - 클래스 타입
+    - 미디어 타입
+3. `canWrite()`조건을 만족하면 `write()`를 호출
+
+
 ## 요청 매핑 핸들러 어댑터 구조
